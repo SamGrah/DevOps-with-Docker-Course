@@ -1,0 +1,10 @@
+$ docker image pull devopsdockeruh/simple-web-service:ubuntu
+$ docker container run -it -d --name secret_msg 4e (used container id)
+$ docker exec -it secret_msg bash
+$ root@b603972a886a:/usr/src/app# tail -f ./text.log
+
+
+### Secret Message ###
+Secret message is: 'You can find the source code here: https://github.com/docker-hy'
+
+

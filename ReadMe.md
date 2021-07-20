@@ -1,5 +1,4 @@
-This repo contains the Coursework exercises for DevOps with Docker course @ https://devopswithdocker.com/. 
-The following summary notes were taken while progressing through the course.
+This repo contains the Coursework exercises for DevOps with Docker course @ https://devopswithdocker.com/.<br /> This ReadMe contains the summary notes taken while progressing through the course.
 
 # Docker with DevOps
 
@@ -59,14 +58,28 @@ $ docker container run hello-world
 
 ---
 
-#### *Image*
+#### *Images*
 
 A docker image is a file from which containers are built. Docker images are functionally immutable because they cannot be modified after they are created. However, new **layers** can be added ontop an image. 
 
 All docker images present on a local PC can be printed to the termial using the command `docker image ls`.
 Docker images are built from an instruction file called a **Dockerfile** as a result of the terminal command `docker image build`.
 
-Basic Dockerfiles contain each of the following commands: `FROM`, `RUN`, `CMD`
+###### Searching Images
+
+Images can be searched on Docker Hub using the terminal command `docker search <title_text>`. The returned search results indicate which images are official. Where offical images are those that have been reviewed by Docker employees, are actively maintained, and have been built from repos in the docker-library.
+
+###### Pulling Images
+
+Images can be pulled from sources other than Docker Hub by specifying the address of the docker image in the pull command. For example, the `docker pull quay.io/norstrom/hello-world` command will download the image from `quay.io` rather than Docker Hub. 
+
+###### Tagging Images
+
+When specifying images, if a tag is not a specified, then the `latest` tag will be used for the pull command. The pull command then takes the form `docker pull image <image_name>:<tag>`. 
+Tags as pseudonyms for other image tags locally. For example, as a result of the terminal command `docker tag ubuntu:18.04 ubuntu:bionic`, utilizing the `ubuntu:bionic` tag will act as a reference to the `ubuntu:18.04` tag.
+
+Basic Dockerfiles contain each of the following commands: `FROM`, `RUN`, `CMD`. 
+
 
 ```dockerfile
 FROM <image>:<tag>
@@ -76,9 +89,40 @@ RUN <install some dependencies>
 CMD <command that is executed on `docker containter run`>
 ```
 
+Each step of the Dockerfile is executed as a step by the docker deamon. Each step 'adds a layer' to the image. The layers act as a cache and can be skipped builds or rebuilds if there is no change to the contents of the cache. 
+
+###### `FROM`
+
+The `FROM` keyword is used to define the base image from which the Dockerfile builds an image.
+
+###### `RUN`
+
+When the image is created commands following the `RUN` keyword are executed. Docker `RUN` commands are automatically executed using the prefix `/bin/sh -c`. In addition to installing dependencies, the `RUN` command is also often used for establishing file permissions. 
+Dockerfiles support multiple `RUN` statements but only a single `CMD` statement.
+
+###### `CMD`
+
+The `CMD` keyword is generally meant for invoking software (start a server) or specific code meant to be executed when the docker container is run.
+
+###### `ENV`
+
+Settings which trail the the `ENV` keyword are stored as enviornment variables within the image. The `export` command doesn't need to be included.
+
+###### `COPY`
+
+Files and folders specified after the `COPY` keyword will be copied into the working directory within the image.
+
+###### `WORKDIR`
+
+The folder structure which trails the `WORKDIR` keyword is created within the image and set as the working directory of the image.
+
+###### `ENTRYPOINT`
+
+Trailing arguments passed in the `docker container run` command are combined with the executable specified by the `ENTRYPOINT` keyword. `ENTRYPOINT` is less flexible than `CMD` because `ENTRYPOINT` must specify an executable command.
 
 
-#### *Container* 
+
+#### *Container*s 
 
 Containers only contain the code and dependencies necessary to execute an application. They are *isolated* enviornment which can communicate both with the host machine and other containers using defined ports. From the perspective of the host PC, containers can be thought of as processes which can communicate via defined ports.
 
@@ -107,42 +151,75 @@ The 'Docker Enginer' contains 3 parts;
 
 When commands are run, the docker client transmits the command through the REST API to the docker deamon. The docker deamon manages the all images, containers, and docker resources. 
 
-###### Create Image from Dockerfile 
-
-`docker image build`
-
-###### Remove Image Locally
-
-`docker image rm <image_name>`
-
-###### Remove All Dangling Images
-
-<!--Dangling Images are those images without an assoicated container-->
-`docker image prune`
-
-###### List Images
-
-`docker image ls` 
-
-###### Create Container from Image
-
-`docker container run <image>`
-
-###### Delete Container Locally
-
-`docker container rm <container_name | container_id>`
-
-###### Remove All Stopped Containers
-
-`docker container prune`
-
-###### List Containers
-
-Running Containers 				`docker container ls`
-All Containers  						`docker container ls -a | grep <matching_text>`
-Search Matching Containers	`docker container ls -a | grep <matching_text>`
-
-###### 
+| Terminal Command                 | Description                                                  |
+| -------------------------------- | ------------------------------------------------------------ |
+| **IMAGES** ||
+| `docker image pull <image_name>` | Download image without container creation                    |
+| `docker image build`             | Create Image from Dockerfile                                 |
+| `docker image rm <image_name>`   | Remove Image Locally                                         |
+| `docker image prune`             | Remove All Dangling Images<br />*Dangling Images are those images without a name which aren't used* |
+| `docker image ls`                | List Images                                                  |
+| **CONTAINERS** |                                                              |
+| `docker container run <image>` | Create Container from Image |
+| `docker container run <container_name>` | Run Container |
+| `docker container stop <container_name>` | Cease Container Execution |
+| `docker container rm <container_name>` | Delete Container Locally |
+| `docker container prune` | Remove All Stopped Containers |
+| `docker container ls` | List Running Containers |
+| `docker container ls -a |grep <matching_text>` | List All Containers |
+| `docker container ls -a |grep <matching_text>` | Search All Containers with Title Containing Matching Text |
+| `docker container exec <container_name>` | Executes a command inside the docker container |
+| `docker pause <container_name>` | Pauses container execution |
+| `docker unpause <container_name>` | Unpauses container execution |
+|  |  |
 
 
+
+### RUNNING AND STOPPING CONTAINERS
+
+By defualt containers run using the `docker run <container_name>` command are dettached from the current terminal. The following flags can be used to allow terminal access to the container and allow terminal commands to be transmitted to the container of choice.
+
+###### Container Run Flags
+
+The following flags are applied to the `docker run <container_name>` command
+
+| Flag                      | Description                                                  |
+| ------------------------- | ------------------------------------------------------------ |
+| `-d`                      | Detached<br />Run container detached from current terminal shell |
+| `-t`                      | Initiate shell prompt in current terminal session            |
+| `-i`                      | Interactive<br />Allow container to recognize terminal commands |
+| `--name <container_name>` | Assign name to created iner                                  |
+| `--rm`                    | Automatically delete garbage containers when the container is exited. Includes primary container. |
+
+
+
+###### Executing Commands After Container Startup
+
+Any commands which follow the `container_name` in the `docker run` command are applied by the container itself after it has begun execution.
+For example, due to the following command...
+`docker run -d -it --name looper ubuntu sh -c 'while true; do date; sleep 1; done'`
+The container named `looper` will execute the shell script 
+
+```shell
+while true; 
+do date;
+sleep 1;
+done
+```
+
+
+
+###### Logging Container Output
+
+The currently logged output of a detached container can be show in the current local terminal by using the command `docker logs <container_name>`.
+To continuously log the output of a container live, the terminal command `docker logs -f <container_name>` can be used.
+
+###### Running Containers and Terminals
+
+Containers can be attached to addtional terminal windows during runtime by invoking the terminal command `docker attach <container_name>` within the desired terminal.
+However, if Ctrl+c is entered in either window, the container process stops execution (exits). This behavior can be avoided passing the `--no-stdin` flag when attaching the container.
+
+###### Passing Keywords to Containers
+
+If the command specified by `ENTRYPOINT` keyword takes an argument (like a script), then an argument can trail the container `run` command and be recognized by the script. Any trailing keywords are treated as arguments by the docker daemon.
 

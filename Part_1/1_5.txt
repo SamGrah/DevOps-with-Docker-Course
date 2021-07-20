@@ -1,0 +1,8 @@
+### Terminal Commands
+$ docker image pull devopsdockeruh/simple-web-service:alpine
+$ docker image pull devopsdockeruh/simple-web-service:ubuntu
+$ docker image ls
+
+REPOSITORY                                    TAG       IMAGE ID       CREATED        SIZE
+devopsdockeruh/simple-web-service             ubuntu    4e3362e907d5   4 months ago   83MB
+devopsdockeruh/simple-web-service             alpine    fd312adc88e0   4 months ago   15.7MB
