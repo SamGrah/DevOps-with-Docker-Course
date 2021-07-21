@@ -1,0 +1,5 @@
+services:
+    simple-web-service:
+      image: simple-web-service
+      ports:
+        - 8080:8080

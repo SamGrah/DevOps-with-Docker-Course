@@ -10,7 +10,7 @@ This repo contains the Coursework exercises for DevOps with Docker course @ http
 
 ---
 
-Docker is a program for creating containers which contain include software (code) and its dependencies. Docker also offers tools which allow for communications between different containers.
+###### Docker is a program for creating containers which contain include software (code) and its dependencies. Docker also offers tools which allow for communications between different containers.
 
 ![](https://docker-hy.github.io/images/1/container.png)
 
@@ -120,6 +120,10 @@ The folder structure which trails the `WORKDIR` keyword is created within the im
 
 Trailing arguments passed in the `docker container run` command are combined with the executable specified by the `ENTRYPOINT` keyword. `ENTRYPOINT` is less flexible than `CMD` because `ENTRYPOINT` must specify an executable command.
 
+###### `EXPOSE`
+
+The `EXPOSE` keyword is used to establish and map a container port to the host machine. 
+
 
 
 #### *Container*s 
@@ -177,19 +181,23 @@ When commands are run, the docker client transmits the command through the REST 
 
 ### RUNNING AND STOPPING CONTAINERS
 
+---
+
 By defualt containers run using the `docker run <container_name>` command are dettached from the current terminal. The following flags can be used to allow terminal access to the container and allow terminal commands to be transmitted to the container of choice.
 
 ###### Container Run Flags
 
 The following flags are applied to the `docker run <container_name>` command
 
-| Flag                      | Description                                                  |
-| ------------------------- | ------------------------------------------------------------ |
-| `-d`                      | Detached<br />Run container detached from current terminal shell |
-| `-t`                      | Initiate shell prompt in current terminal session            |
-| `-i`                      | Interactive<br />Allow container to recognize terminal commands |
-| `--name <container_name>` | Assign name to created iner                                  |
-| `--rm`                    | Automatically delete garbage containers when the container is exited. Includes primary container. |
+| Flag                              | Description                                                  |
+| --------------------------------- | ------------------------------------------------------------ |
+| `-d`                              | Detached<br />Run container detached from current terminal shell |
+| `-t`                              | Initiate shell prompt in current terminal session            |
+| `-i`                              | Interactive<br />Allow container to recognize terminal commands |
+| `--name <container_name>`         | Assign name to created iner                                  |
+| `--rm`                            | Automatically delete garbage containers when the container is exited. Includes primary container. |
+| `-v <host_path>:<container_path>` | Established a volume between host and container via the specified `host_path` and `container_path` locations. |
+| `-p <host_port>:<container_port>` | Maps the exposes and maps container port to host port        |
 
 
 
@@ -222,4 +230,65 @@ However, if Ctrl+c is entered in either window, the container process stops exec
 ###### Passing Keywords to Containers
 
 If the command specified by `ENTRYPOINT` keyword takes an argument (like a script), then an argument can trail the container `run` command and be recognized by the script. Any trailing keywords are treated as arguments by the docker daemon.
+
+
+
+### Volumes
+
+---
+
+A volume is simply a folder (or file) that is shared between the host machine and a container. Changes to the folder/file by a program running inside the container will alter the folder/file on the host machine and the file will be preserved even if the container exits.
+Volumes can be defined by specifying the the container file/folder and host machine file/folder within the docker run command. The `-v` flag is used to specify volume defintion where the syntax is defined as `docker run -v <host_path>:<container_path> <container_name>`.
+
+
+
+### Communication between Container & Host Machine
+
+---
+
+Communication between a host machine and running container can be accomplished via exposed ports. Within a Dockerfile the port specified by the `EXPOSE` keyword is configured to communicate outside the container (exposing a port).
+Additionally, the `docker container run` command must specify a mapping between container port and host port. The docker run command takes the form `docker run -p <host_port>:<container_port> <container_name>`.
+
+
+
+# PART 2
+
+###### 
+
+### Docker Compose
+
+---
+
+Docker compse is a tool used to mange and coordinate multiple containers. Using a `docker-compose.yml` file called a YAML file, multi-container applications can be run using a single command. The format of the compose YAML file:
+
+```yaml
+version: "3.9" #optional
+
+services:
+	web:
+		build: .										# location of Dockerfile from which to build image
+		ports:											# maps container exposed port to host machine port
+			- "5000":"5000"
+		volumes:										# defines file/folder mapping(s) for container --> host
+			- .:/code
+			- logvolume01:/var/log
+		links:
+			- redis
+		redis:
+			image: redis
+	volumes:
+		logvolume01: {}
+```
+
+The YAML file is stored in the project root in the same directory as the Dockerfile. The compose YAML file is composed of the commands and option flags that the docker command line utiliy uses to manipulate images, containers, volumens, repositories, etc. In effect, the docker compose YAML file allows for "automation" of container creation and/or orchestration between containers.
+
+
+
+### Web Services using Docker Componse
+
+---
+
+The main purpose for Docker Compose is to run web services (HTTP). This can
+
+
 
