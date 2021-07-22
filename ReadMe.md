@@ -261,7 +261,7 @@ Additionally, the `docker container run` command must specify a mapping between 
 
 Docker compse is a tool used to mange and coordinate multiple containers. Using a `docker-compose.yml` file called a YAML file, multi-container applications can be run using a single command. The format of the compose YAML file:
 
-```yaml
+```yml
 version: "3.9" #optional
 
 services:
@@ -280,7 +280,7 @@ services:
 		logvolume01: {}
 ```
 
-The YAML file is stored in the project root in the same directory as the Dockerfile. The compose YAML file is composed of the commands and option flags that the docker command line utiliy uses to manipulate images, containers, volumens, repositories, etc. In effect, the docker compose YAML file allows for "automation" of container creation and/or orchestration between containers.
+The YAML file is stored in the project root in the same directory as the Dockerfile. The compose YAML file is composed of the commands and option flags that the docker command line utiliy uses to manipulate images, containers, volumes, repositories, etc. In effect, the docker compose YAML file allows for "automation" of container creation and/or orchestration between containers.
 
 
 

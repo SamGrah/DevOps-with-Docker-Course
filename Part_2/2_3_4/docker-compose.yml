@@ -1,0 +1,27 @@
+version: '3.5'
+
+services:
+    backend:
+      build: ./backend
+      ports:
+        - 8080:8080
+      environment: 
+        - REDIS_HOST=redis-container
+        - POSTGRES_HOST=postgres-container
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_DATABASE=postgres
+
+    frontend:
+      build: ./frontend
+      ports: 
+        - 5000:5000
+
+    redis-container:
+      image: redis
+    
+    postgres-container:
+      image: postgres
+      restart: unless-stopped
+      environment:
+        POSTGRES_PASSWORD: postgres
